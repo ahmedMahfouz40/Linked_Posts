@@ -129,7 +129,7 @@ const Register = () => {
               </span>
               <input
                 {...register("username")}
-                placeholder="Username (Optional)"
+                placeholder="Username"
                 className="w-full rounded-xl border bg-slate-50 py-3 pl-11 pr-4 text-sm text-slate-800 outline-none transition focus:bg-white border-slate-200 focus:border-[#00298d]"
                 type="text"
                 name="username"
@@ -183,6 +183,12 @@ const Register = () => {
               </span>
 
               {/* dateOfBirth */}
+              <label
+                htmlFor="dateOfBirth"
+                className=" sm:hidden font-semibold text-sm text-gray-600"
+              >
+                Date Of Birth
+              </label>
               <input
                 id="dateOfBirth"
                 {...register("dateOfBirth")}
