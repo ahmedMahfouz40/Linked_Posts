@@ -28,7 +28,7 @@ const CreateComment = ({ post }) => {
     return axios.post(
       `https://route-posts.routemisr.com/posts/${post._id}/comments`,
       formData,
-      headerObject,
+      headerObject(),
     );
   }
   const { mutate: creatCommentFn, isPending } = useMutation({

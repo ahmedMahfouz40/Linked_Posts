@@ -38,7 +38,7 @@ const AllComments = ({ post, comments, likeCommentFn, isPending }) => {
   function deleteComment() {
     return axios.delete(
       `https://route-posts.routemisr.com/posts/${post._id}/comments/${comments._id}`,
-      headerObject,
+      headerObject(),
     );
   }
   const { mutate: deleteFn, isPending: isdeleting } = useMutation({
@@ -69,7 +69,7 @@ const AllComments = ({ post, comments, likeCommentFn, isPending }) => {
     return axios.put(
       `https://route-posts.routemisr.com/posts/${post._id}/comments/${comments._id}`,
       formData,
-      headerObject,
+      headerObject(),
     );
   };
   const { mutate: updateCommentFn } = useMutation({

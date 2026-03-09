@@ -1,4 +1,4 @@
-import {  useState } from "react";
+import { useState } from "react";
 import NotificationsHeader from "./NotificationsHeader";
 import NotificationItem from "./NotificationItem";
 import useGet from "../../CustomHooks/useGetPosts";
@@ -74,37 +74,49 @@ const Notifications = () => {
 
   return (
     <>
-     <Helmet>
-            <title>Notifications | Route Posts</title>
-          </Helmet>
-    <div className="p-1 bg-[#F0F2F5] sm:px-5 md:px-10 lg:px-20">
-      <div className="bg-white my-20 rounded-2xl">
-        <NotificationsHeader
-          unreadCount={unreadNotifications?.length || 0}
-          activeTab={activeTab}
-          setActiveTab={setActiveTab}
-        />
+      <Helmet>
+        <title>Notifications | Route Posts</title>
+      </Helmet>
+      <div className="p-1 bg-[#F0F2F5] sm:px-5 md:px-10 lg:px-20">
+        <div className="bg-white my-20 rounded-2xl">
+          <NotificationsHeader
+            unreadCount={unreadNotifications?.length || 0}
+            activeTab={activeTab}
+            setActiveTab={setActiveTab}
+          />
 
-        <div className="px-5">
-          {isLoading ? (
-            <NotificationItemSkeleton />
-          ) : (
-            <>
-              {(activeTab === "all" ? notifications : unreadNotifications)?.map(
-                (item) => (
+          <div className="px-5">
+            {isLoading ? (
+              <NotificationItemSkeleton />
+            ) : (
+              <>
+                {(activeTab === "all"
+                  ? notifications
+                  : unreadNotifications
+                )?.map((item) => (
                   <NotificationItem
                     key={item._id}
                     notification={item}
                     markAsRedFn={markAsRedFn}
                     isPending={isPending}
                   />
-                ),
-              )}
-            </>
-          )}
+                ))}
+              </>
+            )}
+            {activeTab !== "all" && !unreadNotifications && (
+              <>
+                <div className="space-y-2 p-3 sm:p-4">
+                  <div className="rounded-xl border border-slate-200 bg-slate-50 p-8 text-center">
+                    <p className="text-sm font-semibold text-slate-500">
+                      No unread notifications yet.
+                    </p>
+                  </div>
+                </div>
+              </>
+            )}
+          </div>
         </div>
       </div>
-    </div>
     </>
   );
 };

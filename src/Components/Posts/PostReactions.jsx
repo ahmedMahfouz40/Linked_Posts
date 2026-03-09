@@ -13,6 +13,8 @@ import { toast } from "react-toastify";
 
 const PostReactions = ({ post, isDetails, setClickComment, clickComment }) => {
   const queryClient = useQueryClient();
+  const storageKey = `liked_${post._id}`;
+
   //?  get likes
   const { data: dataLikes } = useGet(
     ["postLike", post._id],
@@ -20,7 +22,7 @@ const PostReactions = ({ post, isDetails, setClickComment, clickComment }) => {
     Boolean(post._id),
   );
   const likes = dataLikes?.data?.data?.likes || [];
-  
+
   // ? like and unLike
   const toggleLike = () => {
     return axios.put(
@@ -29,6 +31,7 @@ const PostReactions = ({ post, isDetails, setClickComment, clickComment }) => {
       headerObject(),
     );
   };
+
   const {
     mutate,
     isPending,
@@ -36,6 +39,7 @@ const PostReactions = ({ post, isDetails, setClickComment, clickComment }) => {
   } = useMutation({
     mutationFn: toggleLike,
     onSuccess: (res) => {
+      localStorage.setItem(storageKey, JSON.stringify(res.data.data.liked));
       queryClient.invalidateQueries(["posts"]);
       queryClient.invalidateQueries(["postDetails", post._id]);
       queryClient.invalidateQueries(["postLike", post._id]);
@@ -46,9 +50,12 @@ const PostReactions = ({ post, isDetails, setClickComment, clickComment }) => {
     },
   });
 
-  const postLiked = toggleLikeData?.data?.data.liked;
+  const isLikedByUser =
+    toggleLikeData?.data?.data?.liked ??
+    JSON.parse(localStorage.getItem(storageKey)) ??
+    false;
 
-  // ? Share Post  ===============
+  // ? Share Post
   function sharePost() {
     return axios.post(
       `https://route-posts.routemisr.com/posts/${post._id}/share`,
@@ -61,19 +68,17 @@ const PostReactions = ({ post, isDetails, setClickComment, clickComment }) => {
       },
     );
   }
+
   const { mutate: sharePostFn, isPending: isSharing } = useMutation({
     mutationFn: sharePost,
     onSuccess: (res) => {
-      console.log(res?.data?.message);
       toast.success(res?.data?.message);
       queryClient.invalidateQueries(["posts"]);
     },
     onError: (error) => {
-      console.log(error.response.data.message);
       toast.error(error.response.data.message);
     },
   });
-  // ? click on the comment icon
 
   return (
     <div>
@@ -84,7 +89,6 @@ const PostReactions = ({ post, isDetails, setClickComment, clickComment }) => {
             <span className="inline-flex h-5 w-5 items-center justify-center rounded-full bg-[#1877f2] text-white">
               <FontAwesomeIcon icon={faThumbsUp} size="xs" />
             </span>
-
             <button className="font-semibold transition cursor-pointer hover:text-[#1877f2] hover:underline">
               {post?.likesCount} likes
             </button>
@@ -93,7 +97,6 @@ const PostReactions = ({ post, isDetails, setClickComment, clickComment }) => {
           <div className="flex flex-wrap items-center gap-2 text-xs sm:gap-3 sm:text-sm">
             <span>{post.sharesCount} shares</span>
             <span>{post.commentsCount} comments</span>
-
             {!isDetails && (
               <Link
                 to={`/PostDetails/${post._id}`}
@@ -114,12 +117,8 @@ const PostReactions = ({ post, isDetails, setClickComment, clickComment }) => {
         <button
           disabled={isPending}
           onClick={() => mutate()}
-          className={` disabled:cursor-not-allowed flex cursor-pointer items-center justify-center gap-2 rounded-md p-2 text-xs font-semibold transition-colors sm:text-sm
-            ${
-              postLiked
-                ? "bg-blue-100 text-blue-600"
-                : "text-slate-600 hover:bg-slate-100"
-            }
+          className={`disabled:cursor-not-allowed flex cursor-pointer items-center justify-center gap-2 rounded-md p-2 text-xs font-semibold transition-colors sm:text-sm
+            ${isLikedByUser ? "bg-blue-100 text-blue-600" : "text-slate-600 hover:bg-slate-100"}
           `}
         >
           <FontAwesomeIcon icon={faThumbsUp} />
